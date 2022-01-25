@@ -1,0 +1,25 @@
+.input__wrapper {
+    margin: 5px 10px;
+}
+
+.input__label {
+    color: white;
+    font-size: 12px;
+}
+
+.input__area {
+    outline: none;
+    background: none;
+    border: none;
+    padding-bottom: 3px;
+    border-bottom: white 1px solid;
+    color: white;
+}
+
+.error_text {
+    color: #c76767;
+}
+
+.error_input {
+    border-color: #c76767;
+}

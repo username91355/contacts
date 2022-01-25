@@ -1,0 +1,28 @@
+.login__wrapper {
+    background: #3F72AF;
+    border: #3F72AF 1px solid;
+    box-shadow: 0 0 10px #3F72AF;
+    border-radius: 1em;
+    padding: 1em;
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+}
+
+.login__appTitle {
+    text-align: center;
+}
+
+.login__title {
+    text-align: center;
+    margin: 20px;
+}
+
+.login__input {
+    width: 100%;
+}
+
+.login__buttonBox {
+    text-align: center;
+}
+
