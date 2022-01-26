@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useState} from 'react';
+import React, {ChangeEvent, useCallback, useState} from 'react';
 import s from './EditContactForm.module.css';
 import {api} from '../../../api/api';
 import {Input} from '../../common/Input/Input';
@@ -11,12 +11,13 @@ interface IProps {
     currentEmail: string
     currentPhone: string
     setEditMode: (value: boolean) => void
+    setIsInit: (value: boolean) => void
 }
 
-export const EditContactForm: React.FC<IProps> = props => {
+export const EditContactForm: React.FC<IProps> = React.memo(props => {
 
     const
-        {id, currentName, currentEmail, currentPhone, setEditMode} = props,
+        {id, currentName, currentEmail, currentPhone, setEditMode, setIsInit} = props,
         [name, setName] = useState(currentName),
         [email, setEmail] = useState(currentEmail),
         [phone, setPhone] = useState(currentPhone),
@@ -24,26 +25,26 @@ export const EditContactForm: React.FC<IProps> = props => {
         [emailError, setEmailError] = useState(''),
         [phoneError, setPhoneError] = useState('');
 
-    const inputEventErrorReset = (func: (value: string) => void, value: string) => {
+    const inputEventErrorReset = useCallback((func: (value: string) => void, value: string) => {
         setNameError('');
         setEmailError('');
         setPhoneError('');
         func(value);
-    };
+    }, []);
 
-    const nameChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    const nameChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         inputEventErrorReset(setName, e.currentTarget.value);
-    };
+    }, [inputEventErrorReset]);
 
-    const emailChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    const emailChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         inputEventErrorReset(setEmail, e.currentTarget.value);
-    };
+    }, [inputEventErrorReset]);
 
-    const phoneChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    const phoneChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         inputEventErrorReset(setPhone, e.currentTarget.value);
-    };
+    }, [inputEventErrorReset]);
 
-    const editContact = async () => {
+    const editContact = useCallback(async () => {
         if (validateNameLength(name)) {
             setNameError('Name length must be more than 2 characters');
         } else if (validateEmail(email) || '') {
@@ -53,12 +54,13 @@ export const EditContactForm: React.FC<IProps> = props => {
         } else {
             await api.editContact(id, {id, name, email, phone});
             setEditMode(false);
+            setIsInit(false);
         }
-    };
+    }, [name, email, phone, id, setEditMode, setIsInit]);
 
-    const cancel = () => {
+    const cancel = useCallback(() => {
         setEditMode(false);
-    };
+    }, [setEditMode]);
 
     return (
         <div className={s.editContactForm__wrapper}>
@@ -84,7 +86,7 @@ export const EditContactForm: React.FC<IProps> = props => {
                        error={phoneError}/>
                 <div className={s.editContactForm___buttonsBlock}>
                     <Button onClick={editContact}
-                            title={'Create contact'}
+                            title={'Save changes'}
                             type={'primary'}/>
                     <Button onClick={cancel}
                             title={'Cancel'}
@@ -93,4 +95,4 @@ export const EditContactForm: React.FC<IProps> = props => {
             </div>
         </div>
     );
-};
+});

@@ -11,7 +11,7 @@ interface IProps extends React.HTMLProps<HTMLInputElement> {
     classNameLabel?: string
 }
 
-export const Input: React.FC<IProps> = props => {
+export const Input: React.FC<IProps> = React.memo(props => {
 
     const {
         type,
@@ -27,13 +27,13 @@ export const Input: React.FC<IProps> = props => {
     } = props;
 
     const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        onChange && onChange(e)
-        onChangeText && onChangeText(e.currentTarget.value)
+        onChange && onChange(e);
+        onChangeText && onChangeText(e.currentTarget.value);
     };
 
     const onKeyPressHandler = (e: KeyboardEvent<HTMLInputElement>) => {
-        onKeyPress && onKeyPress(e)
-        onEnter && e.key === 'Enter' && onEnter()
+        onKeyPress && onKeyPress(e);
+        onEnter && e.key === 'Enter' && onEnter();
     };
 
     return (
@@ -47,4 +47,4 @@ export const Input: React.FC<IProps> = props => {
             />
         </div>
     );
-};
+});

@@ -1,19 +1,21 @@
-import React, {ChangeEvent, useState} from 'react';
+import React, {ChangeEvent, useCallback, useState} from 'react';
 import s from './AddContactForm.module.css';
 import {api} from '../../../api/api';
 import {Input} from '../../common/Input/Input';
 import {Button} from '../../common/Button/Button';
 import {validateEmail, validateNameLength, validatePhone} from '../../../utils/validate';
+import {generateID} from '../../../utils/utils';
 
 interface IProps {
-    setAddedMode: (value: boolean) => void;
-    allUserID: number[];
+    setAddedMode: (value: boolean) => void
+    busyIdArray: number[]
+    setIsInit: (value: boolean) => void
 }
 
-export const AddContactForm: React.FC<IProps> = props => {
+export const AddContactForm: React.FC<IProps> = React.memo(props => {
 
     const
-        {setAddedMode, allUserID} = props,
+        {setAddedMode, busyIdArray, setIsInit} = props,
         [name, setName] = useState(''),
         [email, setEmail] = useState(''),
         [phone, setPhone] = useState(''),
@@ -21,33 +23,29 @@ export const AddContactForm: React.FC<IProps> = props => {
         [emailError, setEmailError] = useState(''),
         [phoneError, setPhoneError] = useState('');
 
-    const generateID = (id: number = 1): number => {
-        return (allUserID.some(i => +i === +id))
-            ? generateID(id + 1)
-            : id
-    };
-
-    const inputEventHandlerWithErrorReset = (func: (value: string) => void, value: string) => {
+    const inputEventHandlerWithErrorReset = useCallback((func: (value: string) => void, value: string) => {
         setNameError('');
         setEmailError('');
         setPhoneError('');
         func(value);
-    };
+    },[]);
 
-    const nameChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    const nameChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         inputEventHandlerWithErrorReset(setName, e.currentTarget.value);
-    };
+    }, [inputEventHandlerWithErrorReset]);
 
-    const emailChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    const emailChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         inputEventHandlerWithErrorReset(setEmail, e.currentTarget.value);
-    };
+    }, [inputEventHandlerWithErrorReset]);
 
-    const phoneChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    const phoneChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         inputEventHandlerWithErrorReset(setPhone, e.currentTarget.value);
-    };
+    }, [inputEventHandlerWithErrorReset]);
 
-    const addContact = async () => {
-        const id = generateID();
+    const addContact = useCallback(async () => {
+
+        const id = generateID(busyIdArray);
+
         if (validateNameLength(name)) {
             setNameError('Name length must be more than 2 characters');
         } else if (validateEmail(email) || '') {
@@ -57,12 +55,14 @@ export const AddContactForm: React.FC<IProps> = props => {
         } else {
             await api.addContact({id, name, email, phone});
             setAddedMode(false);
+            setIsInit(false);
         }
-    };
 
-    const cancel = () => {
+    }, [name, email, phone, busyIdArray, setAddedMode, setIsInit]);
+
+    const cancel = useCallback(() => {
         setAddedMode(false);
-    };
+    }, [setAddedMode]);
 
     return (
         <div className={s.addContactForm__wrapper}>
@@ -97,4 +97,4 @@ export const AddContactForm: React.FC<IProps> = props => {
             </div>
         </div>
     );
-};
+});

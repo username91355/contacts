@@ -1,16 +1,16 @@
-import React, {ChangeEvent, useState} from 'react';
+import React, {ChangeEvent, useCallback, useState} from 'react';
+import s from './Login.module.css';
 import {api} from '../../../api/api';
-import s from "./Login.module.css";
 import {validateEmail, validatePasswordLength} from '../../../utils/validate';
-import {Input} from "../../common/Input/Input";
-import {Button} from "../../common/Button/Button";
+import {Input} from '../../common/Input/Input';
+import {Button} from '../../common/Button/Button';
 
 interface IProps {
     setIsAuth: (value: boolean) => void
     me: () => void
 }
 
-export const Login: React.FC<IProps> = props => {
+export const Login: React.FC<IProps> = React.memo(props => {
 
     const
         {setIsAuth, me} = props,
@@ -19,22 +19,22 @@ export const Login: React.FC<IProps> = props => {
         [password, setPassword] = useState<string>(''),
         [passwordError, setPasswordError] = useState<string>('');
 
-    const inputEventErrorReset = (func: (value: string) => void, value: string) => {
+    const inputEventErrorReset = useCallback((func: (value: string) => void, value: string) => {
         setEmailError('');
         setPasswordError('');
         func(value);
-    };
+    }, []);
 
-    const emailChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    const emailChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         inputEventErrorReset(setEmail, e.currentTarget.value);
-    };
+    }, [inputEventErrorReset]);
 
-    const passwordChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    const passwordChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         inputEventErrorReset(setPassword, e.currentTarget.value);
-    };
+    }, [inputEventErrorReset]);
 
 
-    const submit = async () => {
+    const submit = useCallback(async () => {
         if (validateEmail(email) || '') {
             setEmailError('Please enter a valid email');
         } else if (validatePasswordLength(password)) {
@@ -44,7 +44,8 @@ export const Login: React.FC<IProps> = props => {
             await me();
             setIsAuth(true);
         }
-    };
+
+    }, [email, me, password, setIsAuth]);
 
     return (
         <div className={s.login__wrapper}>
@@ -70,4 +71,4 @@ export const Login: React.FC<IProps> = props => {
             </div>
         </div>
     );
-};
+});

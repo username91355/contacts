@@ -9,7 +9,7 @@ export const api = {
             .then(res => (Object.keys(res).length === 0) ? null : res);
     },
 
-    async login(email: string, password: string) {
+    async login(email: string, password: string): Promise<IUser> {
 
         const data = {"id": 1, "email": email, "password": password};
 
@@ -19,10 +19,11 @@ export const api = {
             headers: {
                 'Content-Type': 'application/json'
             }
-        }).then((data) => data.json());
+        })
+            .then((data) => data.json())
     },
 
-    async logout() {
+    async logout(): Promise<{}> {
 
         return await fetch('http://localhost:7542/me', {
             method: 'PUT',
@@ -30,15 +31,16 @@ export const api = {
             headers: {
                 'Content-Type': 'application/json'
             }
-        }).then((data) => data.json());
+        })
+            .then((data) => data.json());
     },
 
-    async getContact(term: string = '') {
+    async getContact(term: string = ''): Promise<IUser[]>  {
         return await fetch(`http://localhost:7542/contacts?q=${term}`)
-            .then(res => res.json())
+            .then(res => res.json());
     },
 
-    async addContact(data: IUser) {
+    async addContact(data: IUser): Promise<IUser> {
 
         return await fetch('http://localhost:7542/contacts', {
             method: 'POST',
@@ -49,7 +51,7 @@ export const api = {
         }).then((data) => data.json());
     },
 
-    async editContact(id: number, data: IUser) {
+    async editContact(id: number, data: IUser): Promise<IUser> {
 
         return await fetch(`http://localhost:7542/contacts/${id}`, {
             method: 'PUT',
@@ -60,7 +62,7 @@ export const api = {
         }).then((data) => data.json());
     },
 
-    async removeContact(id: number) {
+    async removeContact(id: number): Promise<IUser> {
 
         return await fetch(`http://localhost:7542/contacts/${id}`, {
             method: 'DELETE',
@@ -77,7 +79,7 @@ export interface IMe {
     password: string
 }
 
-interface IUser {
+export interface IUser {
     id: number
     name: string,
     email: string,
