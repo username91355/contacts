@@ -7,6 +7,6 @@ export const validateEmail = (email: string) => {
 };
 
 export const validatePhone = (phone: string) => {
-    const reg = /^[0-9\-().\s]{10,15}$/;
+    const reg = /^(\+7|7|8|1|\+1)?[\s\-]?\(?[0-9]{3}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/;
     return !reg.test(phone);
 }
